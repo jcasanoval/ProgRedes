@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30427.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cliente", "Obl_Prog_Redes\Cliente.csproj", "{CE826A1D-96A3-4BE9-ACC5-FB0237FD80A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obligatorio.Client", "Obl_Prog_Redes\Obligatorio.Client.csproj", "{CE826A1D-96A3-4BE9-ACC5-FB0237FD80A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Servidor", "Servidor\Servidor.csproj", "{D351BA4D-FAEB-4C1F-B521-52226FEE6F8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obligatorio.ServerClient", "Servidor\Obligatorio.ServerClient.csproj", "{D351BA4D-FAEB-4C1F-B521-52226FEE6F8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obligatorio.Exceptions", "Exceptions\Obligatorio.Exceptions.csproj", "{18669FEB-EE19-450F-82D8-F5D3A1A555DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D351BA4D-FAEB-4C1F-B521-52226FEE6F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D351BA4D-FAEB-4C1F-B521-52226FEE6F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D351BA4D-FAEB-4C1F-B521-52226FEE6F8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18669FEB-EE19-450F-82D8-F5D3A1A555DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18669FEB-EE19-450F-82D8-F5D3A1A555DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18669FEB-EE19-450F-82D8-F5D3A1A555DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18669FEB-EE19-450F-82D8-F5D3A1A555DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

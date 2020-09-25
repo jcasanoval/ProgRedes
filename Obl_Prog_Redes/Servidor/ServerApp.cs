@@ -4,9 +4,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace Servidor
+namespace Obligatorio.ServerClient
 {
-    class AppServidor
+    public class ServerApp
     {
         static void Main(string[] args)
         {

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Obl_Prog_Redes
+namespace Client
 {
-    class AppCliente
+    class Client
     {
         static void Main(string[] args)
         {
