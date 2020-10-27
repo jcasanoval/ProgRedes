@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Protocoles;
+using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
@@ -22,26 +23,23 @@ namespace Obligatorio.ServerClient
             var id = Interlocked.Add(ref _clientNumber, 1);
             var connected = true;
             Console.WriteLine("Conectado el cliente " + id);
-            SendMainMenu(client);
             while (connected)
             {
                 try
                 {
-                    var data = new byte[256];
-                    var i = client.Receive(data);
-                    if (i == 0)
+                    CommandPackage package = CommandProtocol.RecieveCommand(client);
+                    switch (package.Command)
                     {
-                        Console.WriteLine("El cliente {0} cerro la conexion", id);
-                        client.Shutdown(SocketShutdown.Both);
-                        client.Close();
-                        connected = false;
+                        case CommandConstants.RequestLoggedUser:
+                            RequestLoggedUser(client, connection);
+                            break;
+                        case CommandConstants.Login:
+                            Login(client, package.Data, connection);
+                            break;
+                        case CommandConstants.Register:
+                            Register(client, package.Data, connection);
+                            break;
                     }
-                    else
-                    {
-                        Console.WriteLine("Recibi {0} bytes ", i);
-                        Console.WriteLine(Encoding.UTF8.GetString(data).TrimEnd());
-                    }
-
                 }
                 catch (SocketException ex)
                 {
@@ -54,12 +52,54 @@ namespace Obligatorio.ServerClient
             }
         }
 
-        public static void SendMainMenu(Socket client)
+        private static void RequestLoggedUser(Socket client, Connection connection)
         {
-            var message = "Bienvenido al menu principal \n Login: iniciar sesion \n SignIn: registrarse \n Exit";
-            var data = Encoding.UTF8.GetBytes(message);
-            var dataSent = client.Send(data);
-            Console.WriteLine("bytes sent {0}", dataSent);
+            CommandPackage response;
+            if (connection.User == null)
+            {
+                response = new CommandPackage(HeaderConstants.Response, CommandConstants.RequestLoggedUser, MessageConstants.NoUserFound);
+            }
+            else
+            {
+                response = new CommandPackage(HeaderConstants.Response, CommandConstants.RequestLoggedUser, connection.User.Name);
+            }
+            CommandProtocol.SendCommand(client, response);
+        }
+
+        private static void Login(Socket client, String data, Connection connection)
+        {
+            var message = data.Split("%");
+            string username = message[0];
+            string password = message[1];
+            CommandPackage response;
+            try
+            {
+                connection.User = Server.GetInstance().Login(username, password);
+                response = new CommandPackage(HeaderConstants.Response, CommandConstants.Login, MessageConstants.SuccessfulLogin);
+            }
+            catch (Exception ex)
+            {
+                response = new CommandPackage(HeaderConstants.Response, CommandConstants.Login, MessageConstants.FailedLogin);
+            }
+            CommandProtocol.SendCommand(client, response);
+        }
+
+        private static void Register(Socket client, String data, Connection connection)
+        {
+            var message = data.Split("%");
+            string username = message[0];
+            string password = message[1];
+            CommandPackage response;
+            try
+            {
+                connection.User = Server.GetInstance().RegisterUser(username, password);
+                response = new CommandPackage(HeaderConstants.Response, CommandConstants.Register, MessageConstants.SuccessfulRegister);
+            }
+            catch (Exception ex)
+            {
+                response = new CommandPackage(HeaderConstants.Response, CommandConstants.Register, MessageConstants.FailedRegister);
+            }
+            CommandProtocol.SendCommand(client, response);
         }
     }
 }

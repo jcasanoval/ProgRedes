@@ -39,19 +39,27 @@ namespace Obligatorio.ServerClient
             }
         }
 
-        public void RegisterUser(string username, string password)
+        public User RegisterUser(string username, string password)
         {
             User newUser = new User();
             newUser.Name = username;
             newUser.Password = password;
             if (users.Contains(newUser))
             {
-                //throw new UserAlreadyExistsException();
+                throw new Exception();
             }
-            else
+            users.Add(newUser);
+            return newUser;
+        }
+
+        public User Login(String username, String password)
+        {
+            User user = users.Find(x => x.Name == username && x.Password == password);
+            if (user == null)
             {
-                users.Add(newUser);
+                throw new Exception();
             }
+            return user;
         }
     }
 }
