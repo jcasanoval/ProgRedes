@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 
 namespace Protocoles
@@ -56,6 +57,33 @@ namespace Protocoles
             {
                 sentBytes += socket.Send(message, sentBytes, message.Length - sentBytes, SocketFlags.None);
             }
+        }
+
+        public static void SendList(Socket socket, List<String> list, int command)
+        {
+            CommandPackage package;
+            foreach (String s in list)
+            {
+                package = new CommandPackage(HeaderConstants.Response, command, s);
+                SendCommand(socket, package);
+                RecieveCommand(socket);
+            }
+            package = new CommandPackage(HeaderConstants.Response, CommandConstants.FinishSendingList);
+            SendCommand(socket, package);
+        }
+
+        public static List<String> RecieveList(Socket socket)
+        {
+            CommandPackage package = RecieveCommand(socket);
+            List<String> list = new List<String>();
+            while (package.Command != CommandConstants.FinishSendingList)
+            {
+                list.Add(package.Data);
+                CommandPackage ack = new CommandPackage(HeaderConstants.Request, CommandConstants.ACK);
+                SendCommand(socket, ack);
+                package = RecieveCommand(socket);
+            }
+            return list;
         }
     }
 }

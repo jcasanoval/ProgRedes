@@ -10,6 +10,8 @@ namespace Protocoles
         public const int Login = 1;
         public const int Register = 2;
         public const int RequestLoggedUser = 3;
+        public const int FinishSendingList = 4;
+        public const int ACK = 5;
     }
 
     public class MessageConstants
