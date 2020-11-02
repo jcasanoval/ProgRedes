@@ -15,9 +15,16 @@ namespace Protocoles
             package.DecodeHeader(buffer);
 
             var bufferMessage = new byte[package.DataLength];
-            RecieveData(socket, package.DataLength, bufferMessage);
-
-            package.DecodeMessage(bufferMessage);
+            try
+            {
+                RecieveData(socket, package.DataLength, bufferMessage);
+                package.DecodeMessage(bufferMessage);
+            }
+            catch
+            {
+                return package;
+            }
+            
             return package;
         }
 
@@ -33,6 +40,7 @@ namespace Protocoles
                     {
                         socket.Shutdown(SocketShutdown.Both);
                         socket.Close();
+                        throw new Exception() ;
                     }
                     iRecv += localRecv;
                 }

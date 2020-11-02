@@ -22,7 +22,7 @@ namespace Client
             {
                 while (isRunning)
                 {
-                    MainMenu(isRunning, socket);
+                    MainMenu(ref isRunning, socket);
                 }
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
@@ -36,22 +36,22 @@ namespace Client
             }
         }
 
-        private static void MainMenu(bool keepRunning, Socket socket)
+        private static void MainMenu(ref bool keepRunning, Socket socket)
         {
             CommandPackage package = new CommandPackage(HeaderConstants.Request, CommandConstants.RequestLoggedUser);
             CommandProtocol.SendCommand(socket, package);
             CommandPackage response = CommandProtocol.RecieveCommand(socket);
             if (response.Data == MessageConstants.NoUserFound)
             {
-                LoginMainMenu(keepRunning, socket);
+                LoginMainMenu(ref keepRunning, socket);
             }
             else
             {
-                LoggedMainMenu(keepRunning, socket, response.Data);
+                LoggedMainMenu(ref keepRunning, socket, response.Data);
             }
         }
 
-        private static void LoginMainMenu(bool keepRunning, Socket socket)
+        private static void LoginMainMenu(ref bool keepRunning, Socket socket)
         {
             Console.WriteLine(separador);
             Console.WriteLine("Bienvenido al menu principal, ingresa a tu cuenta o registrate \n 1-Login \n 2-Register \n 3-Exit");
@@ -128,7 +128,7 @@ namespace Client
             }
         }
 
-        private static void LoggedMainMenu(bool keepRunning, Socket socket, String username)
+        private static void LoggedMainMenu(ref bool keepRunning, Socket socket, String username)
         {
             Console.WriteLine(separador);
             Console.WriteLine("Bienvenido {0}!", username);
