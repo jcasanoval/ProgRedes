@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obligatorio.Client", "Obl_P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obligatorio.ServerClient", "Servidor\Obligatorio.ServerClient.csproj", "{D351BA4D-FAEB-4C1F-B521-52226FEE6F8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protocoles", "Protocoles\Protocoles.csproj", "{424BBE8F-DA30-43D0-9E83-C7532F428326}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Protocoles\Common.csproj", "{424BBE8F-DA30-43D0-9E83-C7532F428326}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

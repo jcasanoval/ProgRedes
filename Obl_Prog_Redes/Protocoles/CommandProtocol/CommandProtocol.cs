@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-namespace Protocoles
+namespace Common.CommandProtocol
 {
     public static class CommandProtocol
     {
         public static CommandPackage RecieveCommand(Socket socket)
         {
             var buffer = new byte[HeaderConstants.HeaderLength];
-            RecieveData(socket, HeaderConstants.HeaderLength, buffer);
-            
             CommandPackage package = new CommandPackage();
-            package.DecodeHeader(buffer);
-
-            var bufferMessage = new byte[package.DataLength];
             try
             {
+                RecieveData(socket, HeaderConstants.HeaderLength, buffer);
+                package.DecodeHeader(buffer);
+                var bufferMessage = new byte[package.DataLength];
                 RecieveData(socket, package.DataLength, bufferMessage);
                 package.DecodeMessage(bufferMessage);
             }
@@ -40,13 +38,14 @@ namespace Protocoles
                     {
                         socket.Shutdown(SocketShutdown.Both);
                         socket.Close();
-                        throw new Exception() ;
+                        throw new SocketException() ;
                     }
                     iRecv += localRecv;
                 }
                 catch (SocketException se)
                 {
-                    Console.WriteLine(se.Message);
+                    Console.WriteLine("Se desconecto el cliente remoto");
+                    return;
                 }
             }
         }

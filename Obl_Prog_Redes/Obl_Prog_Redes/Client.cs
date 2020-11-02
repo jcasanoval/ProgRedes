@@ -2,7 +2,9 @@
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
-using Protocoles;
+using Common.FileProtocol.FileHandler;
+using Common.FileProtocol.NetworkUtils;
+using Common.CommandProtocol;
 
 namespace Client
 {
@@ -132,7 +134,34 @@ namespace Client
         {
             Console.WriteLine(separador);
             Console.WriteLine("Bienvenido {0}!", username);
-            Console.ReadLine();
+            Console.WriteLine("\n 1-Subir Foto \n 2-Listado usuarios sistema \n 3-Listado fotos usuario \n 4-Ver comentarios de mis fotos \n 5-Agregar comentario \n 6-Salir");
+            var input = Console.ReadLine();
+            switch (input)
+            {
+                case "1":
+                    break;
+                case "2":
+                    break;
+                case "3":
+                    break;
+                case "4":
+                    break;
+                case "5":
+                    break;
+                case "6":
+                    break;
+            }
+        }
+
+        private static void UploadPicture(Socket socket)
+        {
+            Console.WriteLine("Por favor inserte el path de la imagen que desea subir");
+            string path = string.Empty;
+            while(path != null && path.Equals(string.Empty) && !FileHandler.FileExists(path))
+            {
+                path = Console.ReadLine();
+            }
+            
         }
 
         

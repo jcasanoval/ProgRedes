@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Protocoles
+namespace Common.CommandProtocol
 {
     public class CommandConstants
     {
