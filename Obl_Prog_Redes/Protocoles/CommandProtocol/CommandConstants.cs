@@ -12,6 +12,12 @@ namespace Common.CommandProtocol
         public const int RequestLoggedUser = 3;
         public const int FinishSendingList = 4;
         public const int ACK = 5;
+        public const int UserList = 6;
+        public const int SendPicture = 7;
+        public const int PictureList = 8;
+        public const int CommentList = 9;
+        public const int NewComment = 10;
+        public const int Error = 99;
     }
 
     public class MessageConstants

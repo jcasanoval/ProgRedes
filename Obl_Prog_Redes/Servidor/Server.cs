@@ -10,9 +10,11 @@ namespace Obligatorio.ServerClient
 {
     public class Server
     {
+        private const String separador = "---------------------------------------------------------------";
         private List<User> users = new List<User>();
         private List<Connection> connections = new List<Connection>();
         private static Server serverInstance;
+        public static int pictureCount = 0;
 
         public static Server GetInstance()
         {
@@ -30,12 +32,55 @@ namespace Obligatorio.ServerClient
             var localEp = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6000);
             server.Bind(localEp);
             server.Listen(100);
+            var serverMenu = new Thread(() => ServerMenu());
+            serverMenu.Start();
             while (true)
             {
                 var client = server.Accept();
                 Connection newConnection = new Connection();
                 connections.Add(newConnection);
                 newConnection.StartConnection(client);
+            }
+        }
+
+        private static void ServerMenu()
+        {
+            bool keepRunning = true;
+            while (keepRunning)
+            {
+                Console.WriteLine(separador);
+                Console.WriteLine("MENU DEL SERVIDOR \n 1-Mostrar clientes conectados \n 2-ABM cliente \n 3-Listar fotos de un usuario \n 4-Subir foto \n 5-Comentar foto \n 6-Apagar el servidor");
+                var input = Console.ReadLine();
+                switch (input)
+                {
+                    case "1":
+                        Server.GetInstance().PrintConnections();
+                        break;
+                    case "2":
+                        break;
+                    case "3":
+                        break;
+                    case "4":
+                        break;
+                    case "5":
+                        break;
+                    case "6":
+                        break;
+                    default:
+                        Console.WriteLine("Opcion no valida");
+                        break;
+                }
+            }
+        }
+
+        private void PrintConnections()
+        {
+            foreach (Connection connection in connections)
+            {
+                if (connection.User != null)
+                {
+                    Console.WriteLine(connection.User.Name);
+                }
             }
         }
 
@@ -60,6 +105,29 @@ namespace Obligatorio.ServerClient
                 throw new Exception();
             }
             return user;
+        }
+
+        public List<string> UserListStrings()
+        {
+            List<string> list = new List<string>();
+            foreach (User user in users)
+            {
+                list.Add(user.Name);
+            }
+            return list;
+        }
+
+        public User GetUser(string name)
+        {
+            User res = null;
+            foreach (User user in users)
+            {
+                if (user.Name == name)
+                {
+                    res = user;
+                }
+            }
+            return res;
         }
     }
 }

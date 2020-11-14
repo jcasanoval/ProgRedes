@@ -9,9 +9,9 @@ namespace Common.FileProtocol.NetworkUtils
     {
         private readonly NetworkStream _networkStream;
 
-        public NetworkStreamHandler(NetworkStream networkStream)
+        public NetworkStreamHandler(Socket socket)
         {
-            _networkStream = networkStream;
+            _networkStream = new NetworkStream(socket);
         }
 
         public byte[] Read(int length)

@@ -2,9 +2,11 @@
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
-using Common.FileProtocol.FileHandler;
 using Common.FileProtocol.NetworkUtils;
 using Common.CommandProtocol;
+using System.Collections.Generic;
+using Common.FileProtocol.FileManager;
+using Common.FileProtocol.Protocol;
 
 namespace Client
 {
@@ -139,14 +141,19 @@ namespace Client
             switch (input)
             {
                 case "1":
+                    UploadPicture(socket);
                     break;
                 case "2":
+                    ListUsers(socket);
                     break;
                 case "3":
+                    ListPhotos(socket);
                     break;
                 case "4":
+                    ListComments(socket);
                     break;
                 case "5":
+                    AddComment(socket);
                     break;
                 case "6":
                     break;
@@ -156,14 +163,115 @@ namespace Client
         private static void UploadPicture(Socket socket)
         {
             Console.WriteLine("Por favor inserte el path de la imagen que desea subir");
-            string path = string.Empty;
-            while(path != null && path.Equals(string.Empty) && !FileHandler.FileExists(path))
+            string path = Console.ReadLine();
+            while(path.Equals(string.Empty) || !FileHandler.FileExists(path))
             {
+                Console.WriteLine("path invalido");
                 path = Console.ReadLine();
             }
-            
+
+            Console.WriteLine("Ingrese el nombre que desea darle a la foto");
+            string name = Console.ReadLine();
+            CommandPackage package = new CommandPackage(HeaderConstants.Request, CommandConstants.SendPicture, name);
+            CommandProtocol.SendCommand(socket, package);
+
+            FileProtocol fileProtocol = new FileProtocol(socket);
+            fileProtocol.SendFile(path);
+            Console.WriteLine("Su foto fue subida con exito");
         }
 
-        
+        private static void ListUsers(Socket socket)
+        {
+            CommandPackage package = new CommandPackage(HeaderConstants.Request, CommandConstants.UserList);
+            CommandProtocol.SendCommand(socket, package);
+            List<string> list = CommandProtocol.RecieveList(socket);
+            foreach(string user in list)
+            {
+                Console.WriteLine(user);
+            }
+        }
+
+        private static void ListPhotos(Socket socket)
+        {
+            Console.WriteLine("Inserte el usuario del cual desea ver las fotos, si desea ver las suyas puede dejar en blanco");
+            var user = Console.ReadLine();
+            CommandPackage package = new CommandPackage(HeaderConstants.Request, CommandConstants.PictureList, user);
+            CommandProtocol.SendCommand(socket, package);
+
+            CommandPackage response = CommandProtocol.RecieveCommand(socket);
+            if (response.Command == CommandConstants.PictureList)
+            {
+                List<string> pictures = CommandProtocol.RecieveList(socket);
+
+                if (pictures.Count != 0)
+                {
+                    if (user == "")
+                    {
+                        Console.WriteLine("Sus fotos son:");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Las fotos de " + user + " son:");
+                    }
+                    
+                    foreach (string picture in pictures)
+                    {
+                        Console.WriteLine(picture);
+                    }
+                }
+                else
+                {
+                    if (user == "")
+                    {
+                        user = "Usted";
+                    }
+                    Console.WriteLine(user + " no tiene fotos actualmente");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Usuario invalido");
+            }
+        }
+
+        private static void ListComments(Socket socket)
+        {
+            Console.WriteLine("Indique de que foto desea ver los comentarios");
+            var photo = Console.ReadLine();
+            CommandPackage package = new CommandPackage(HeaderConstants.Request, CommandConstants.CommentList, photo);
+            CommandProtocol.SendCommand(socket, package);
+
+            CommandPackage response = CommandProtocol.RecieveCommand(socket);
+            if (response.Command == CommandConstants.CommentList)
+            {
+                Console.WriteLine("Los comentarios son:");
+                List<string> comments = CommandProtocol.RecieveList(socket);
+                foreach(string comment in comments)
+                {
+                    Console.WriteLine(comment);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nombre de foto invalido");
+            }
+        }
+
+        private static void AddComment(Socket socket)
+        {
+            Console.WriteLine("Indique el usuario al cual pertenece la foto que desea comentar");
+            var user = Console.ReadLine();
+            Console.WriteLine("Indique la foto que desea comentar");
+            var photo = Console.ReadLine();
+            Console.WriteLine("Ingrese el comentario");
+            var comment = Console.ReadLine();
+            var data = user + "%" + photo + "%" + comment;
+
+            CommandPackage package = new CommandPackage(HeaderConstants.Request, CommandConstants.NewComment, data);
+            CommandProtocol.SendCommand(socket, package);
+
+            CommandPackage response = CommandProtocol.RecieveCommand(socket);
+            Console.WriteLine(response.Data);
+        }
     }
 }

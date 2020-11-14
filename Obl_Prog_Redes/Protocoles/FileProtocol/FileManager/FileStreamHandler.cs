@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Common.FileProtocol.FileHandler
+namespace Common.FileProtocol.FileManager
 {
     public class FileStreamHandler
     {

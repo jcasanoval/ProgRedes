@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace Common.FileProtocol.FileHandler
+namespace Common.FileProtocol.FileManager
 {
-    public static class FileHandler
+    public class FileHandler
     {
         public static bool FileExists(string path)
         {
