@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obligatorio.ServerClient", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Protocoles\Common.csproj", "{424BBE8F-DA30-43D0-9E83-C7532F428326}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obligatorio.LogsServer", "Obligatorio.LogsServer\Obligatorio.LogsServer.csproj", "{1B6C6A51-C29E-4144-BAAF-8ADE5ED8BF28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{424BBE8F-DA30-43D0-9E83-C7532F428326}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{424BBE8F-DA30-43D0-9E83-C7532F428326}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{424BBE8F-DA30-43D0-9E83-C7532F428326}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B6C6A51-C29E-4144-BAAF-8ADE5ED8BF28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B6C6A51-C29E-4144-BAAF-8ADE5ED8BF28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B6C6A51-C29E-4144-BAAF-8ADE5ED8BF28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B6C6A51-C29E-4144-BAAF-8ADE5ED8BF28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
