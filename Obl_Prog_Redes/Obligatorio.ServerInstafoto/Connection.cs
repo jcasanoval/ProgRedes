@@ -4,8 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
+using RabbitMQ.Client;
+using Common;
 
-namespace Obligatorio.ServerClient
+namespace Obligatorio.ServerInstafoto
 {
     public class Connection
     {
@@ -109,6 +111,7 @@ namespace Obligatorio.ServerClient
             {
                 connection.User = Server.GetInstance().RegisterUser(username, password);
                 response = new CommandPackage(HeaderConstants.Response, CommandConstants.Register, MessageConstants.SuccessfulRegister);
+                Server.GetInstance().LogAction(LogConstants.Info, "Registrado usuario " + username);
             }
             catch (Exception ex)
             {

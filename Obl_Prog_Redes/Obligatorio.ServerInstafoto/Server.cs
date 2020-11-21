@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using RabbitMQ.Client;
 
-namespace Obligatorio.ServerClient
+namespace Obligatorio.ServerInstafoto
 {
     public class Server
     {
@@ -41,6 +41,23 @@ namespace Obligatorio.ServerClient
                 Connection newConnection = new Connection();
                 connections.Add(newConnection);
                 newConnection.StartConnection(client);
+            }
+        }
+
+        public void LogAction(string logType, string message)
+        {
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            using(var connection = factory.CreateConnection())
+            using(var channel = connection.CreateModel())
+            {
+                channel.ExchangeDeclare(exchange: "topic_logs",
+                                        type: "topic");
+                var routingKey = "log." + logType;
+                var body = Encoding.UTF8.GetBytes(message);
+                channel.BasicPublish(exchange: "topic_logs",
+                                     routingKey: routingKey,
+                                     basicProperties: null,
+                                     body: body);
             }
         }
 
@@ -321,24 +338,6 @@ namespace Obligatorio.ServerClient
                 }
             }
             return res;
-        }
-
-        public void Log(string log)
-        {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
-            {
-                channel.ExchangeDeclare(exchange: "logs", type: ExchangeType.Fanout); //Exchange "global"  que recibe los mensajes
-
-                var message = log;
-                var body = Encoding.UTF8.GetBytes(message);
-                channel.BasicPublish(exchange: "logs",
-                    routingKey: "",
-                    basicProperties: null,
-                    body: body);
-                Console.WriteLine(" [x] Sent {0}", message);
-            }
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Obligatorio.ServerClient
+namespace Obligatorio.ServerInstafoto
 {
     public class Comment
     {
