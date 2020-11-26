@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using RabbitMQ.Client;
 
@@ -13,9 +12,12 @@ namespace Obligatorio.ServerInstafoto
     {
         private const String separador = "---------------------------------------------------------------";
         private List<User> users = new List<User>();
-        private List<Connection> connections = new List<Connection>();
+        public List<Connection> connections = new List<Connection>();
         private static Server serverInstance;
         public static int pictureCount = 0;
+        private const string ExchangeName = "logExchange";
+
+        private static bool keepRunning = true;
 
         public static Server GetInstance()
         {
@@ -35,35 +37,36 @@ namespace Obligatorio.ServerInstafoto
             server.Listen(100);
             var serverMenu = new Thread(() => ServerMenu());
             serverMenu.Start();
-            while (true)
+            while (keepRunning)
             {
                 var client = server.Accept();
                 Connection newConnection = new Connection();
                 connections.Add(newConnection);
+                newConnection.Socket = client;
                 newConnection.StartConnection(client);
             }
+            
         }
 
-        public void LogAction(string logType, string message)
+        public void LogAction(string log)
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            using(var connection = factory.CreateConnection())
-            using(var channel = connection.CreateModel())
-            {
-                channel.ExchangeDeclare(exchange: "topic_logs",
-                                        type: "topic");
-                var routingKey = "log." + logType;
-                var body = Encoding.UTF8.GetBytes(message);
-                channel.BasicPublish(exchange: "topic_logs",
-                                     routingKey: routingKey,
-                                     basicProperties: null,
-                                     body: body);
-            }
+            var connectionFactory = new ConnectionFactory { HostName = "localhost" };
+            using IConnection connection = connectionFactory.CreateConnection();
+            using IModel channel = connection.CreateModel();
+            ExchangeDeclare(channel);
+            PublishMessage(channel, log);
         }
-
+        private static void ExchangeDeclare(IModel channel)
+        {
+            channel.ExchangeDeclare(ExchangeName, ExchangeType.Fanout);
+        }
+        private static void PublishMessage(IModel channel, string message) 
+        {
+            var body = Encoding.UTF8.GetBytes(message);
+            channel.BasicPublish(ExchangeName, String.Empty, null, body);
+        }
         private static void ServerMenu()
         {
-            bool keepRunning = true;
             while (keepRunning)
             {
                 Console.WriteLine(separador);
@@ -87,6 +90,16 @@ namespace Obligatorio.ServerInstafoto
                         Server.GetInstance().CommentPhoto();
                         break;
                     case "6":
+                        //var trapSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        //trapSocket.Connect("127.0.0.1", 6000);
+                        foreach (Connection connection in Server.GetInstance().connections) 
+                        {
+                            connection.Socket.Shutdown(SocketShutdown.Both);
+                            connection.Socket.Close();
+
+                        }
+
+                        keepRunning = false;
                         break;
                     default:
                         Console.WriteLine("Opcion no valida");
@@ -304,9 +317,6 @@ namespace Obligatorio.ServerInstafoto
             users.Add(newUser);
             return newUser;
         }
-
-
-
         public User Login(String username, String password)
         {
             User user = users.Find(x => x.Name == username && x.Password == password);

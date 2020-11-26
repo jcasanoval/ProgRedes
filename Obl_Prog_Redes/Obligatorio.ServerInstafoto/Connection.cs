@@ -12,6 +12,7 @@ namespace Obligatorio.ServerInstafoto
     public class Connection
     {
         public User User { get; set; }
+        public Socket Socket { get; set; }
         static int _clientNumber;
 
 
@@ -32,6 +33,10 @@ namespace Obligatorio.ServerInstafoto
                     CommandPackage package = CommandProtocol.RecieveCommand(client);
                     switch (package.Command)
                     {
+                        case CommandConstants.Exit:
+                            connected = false;
+                            Console.WriteLine("El cliente " + id + " cerró la conexión: ");
+                            break;
                         case CommandConstants.RequestLoggedUser:
                             RequestLoggedUser(client, connection);
                             break;
@@ -58,15 +63,15 @@ namespace Obligatorio.ServerInstafoto
                             break;
                     }
                 }
-                catch (SocketException ex)
+                catch (Exception ex)
                 {
-                    Console.WriteLine("El cli6nte " + id + " cerró la conexión: " + ex.Message + " ErrorCode" +
-                    ex.ErrorCode);
+                    Console.WriteLine("El cliente " + id + " cerró la conexión: ");
                     connected = false;
                     client.Shutdown(SocketShutdown.Both);
                     client.Close();
                 }
             }
+            Server.GetInstance().connections.Remove(connection);
         }
 
         private static void RequestLoggedUser(Socket client, Connection connection)
@@ -111,11 +116,12 @@ namespace Obligatorio.ServerInstafoto
             {
                 connection.User = Server.GetInstance().RegisterUser(username, password);
                 response = new CommandPackage(HeaderConstants.Response, CommandConstants.Register, MessageConstants.SuccessfulRegister);
-                Server.GetInstance().LogAction(LogConstants.Info, "Registrado usuario " + username);
+                Server.GetInstance().LogAction("Usuario: " + username + " registrado correctamente");
             }
             catch (Exception ex)
             {
                 response = new CommandPackage(HeaderConstants.Response, CommandConstants.Register, MessageConstants.FailedRegister);
+
             }
             CommandProtocol.SendCommand(client, response);
         }

@@ -10,19 +10,11 @@ namespace Common.CommandProtocol
         {
             var buffer = new byte[HeaderConstants.HeaderLength];
             CommandPackage package = new CommandPackage();
-            try
-            {
-                RecieveData(socket, HeaderConstants.HeaderLength, buffer);
-                package.DecodeHeader(buffer);
-                var bufferMessage = new byte[package.DataLength];
-                RecieveData(socket, package.DataLength, bufferMessage);
-                package.DecodeMessage(bufferMessage);
-            }
-            catch
-            {
-                return package;
-            }
-            
+            RecieveData(socket, HeaderConstants.HeaderLength, buffer);
+            package.DecodeHeader(buffer);
+            var bufferMessage = new byte[package.DataLength];
+            RecieveData(socket, package.DataLength, bufferMessage);
+            package.DecodeMessage(bufferMessage);
             return package;
         }
 
@@ -44,8 +36,7 @@ namespace Common.CommandProtocol
                 }
                 catch (SocketException se)
                 {
-                    Console.WriteLine("Se desconecto el cliente remoto");
-                    return;
+                    throw new Exception();
                 }
             }
         }

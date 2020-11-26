@@ -28,11 +28,10 @@ namespace Client
                 {
                     MainMenu(ref isRunning, socket);
                 }
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
+               
                 Console.WriteLine("se cerro la conexion");
             }
-            catch (SocketException x)
+            catch (SocketException ex)
             {
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
@@ -69,7 +68,14 @@ namespace Client
                     RegisterMenu(socket);
                     break;
                 case "3":
+                    CommandPackage package = new CommandPackage(HeaderConstants.Request, CommandConstants.Exit);
+                    CommandProtocol.SendCommand(socket, package);
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Close();
                     keepRunning = false;
+                    break;
+                default:
+                    Console.WriteLine("Opcion no valida");
                     break;
             }
         }
@@ -156,6 +162,14 @@ namespace Client
                     AddComment(socket);
                     break;
                 case "6":
+                    CommandPackage package = new CommandPackage(HeaderConstants.Request, CommandConstants.Exit);
+                    CommandProtocol.SendCommand(socket, package);
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Close();
+                    keepRunning = false;
+                    break;
+                default:
+                    Console.WriteLine("Opcion no valida");
                     break;
             }
         }

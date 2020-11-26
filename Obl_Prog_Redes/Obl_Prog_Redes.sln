@@ -7,11 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obligatorio.Client", "Obl_P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Protocoles\Common.csproj", "{424BBE8F-DA30-43D0-9E83-C7532F428326}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obligatorio.LogsServer", "Obligatorio.LogsServer\Obligatorio.LogsServer.csproj", "{FF0A0940-FC3D-4E43-899B-DBAB36DD3E39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obligatorio.LogsServer", "Obligatorio.LogsServer\Obligatorio.LogsServer.csproj", "{FF0A0940-FC3D-4E43-899B-DBAB36DD3E39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obligatorio.ServerInstafoto", "Obligatorio.ServerInstafoto\Obligatorio.ServerInstafoto.csproj", "{BCC3F3C3-E8E1-44C9-9A08-6EF08807DC2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obligatorio.ServerInstafoto", "Obligatorio.ServerInstafoto\Obligatorio.ServerInstafoto.csproj", "{BCC3F3C3-E8E1-44C9-9A08-6EF08807DC2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obligatorio.AdminClient", "Obligatorio.AdminClient\Obligatorio.AdminClient.csproj", "{09C1BB00-753A-4232-8E18-4A34557103C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obligatorio.AdminClient", "Obligatorio.AdminClient\Obligatorio.AdminClient.csproj", "{09C1BB00-753A-4232-8E18-4A34557103C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogServer", "LogServer\LogServer.csproj", "{310F49C8-6FEF-4B93-81EC-2E57EE0B819A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{09C1BB00-753A-4232-8E18-4A34557103C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09C1BB00-753A-4232-8E18-4A34557103C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09C1BB00-753A-4232-8E18-4A34557103C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{310F49C8-6FEF-4B93-81EC-2E57EE0B819A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{310F49C8-6FEF-4B93-81EC-2E57EE0B819A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{310F49C8-6FEF-4B93-81EC-2E57EE0B819A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{310F49C8-6FEF-4B93-81EC-2E57EE0B819A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

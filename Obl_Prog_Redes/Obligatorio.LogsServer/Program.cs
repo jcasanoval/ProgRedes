@@ -13,7 +13,7 @@ namespace Obligatorio.LogsServer
     {
         public static void Main(string[] args)
         {
-            //CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args).Build().Run();
             LogServer.GetInstance().StartListeners();
         }
 
