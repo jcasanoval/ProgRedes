@@ -17,7 +17,7 @@ namespace Obligatorio.ServerInstafoto
         public static int pictureCount = 0;
         private const string ExchangeName = "logExchange";
 
-        private static bool keepRunning = true;
+        public static bool keepRunning = true;
 
         public static Server GetInstance()
         {
@@ -39,11 +39,20 @@ namespace Obligatorio.ServerInstafoto
             serverMenu.Start();
             while (keepRunning)
             {
+
                 var client = server.Accept();
-                Connection newConnection = new Connection();
-                connections.Add(newConnection);
-                newConnection.Socket = client;
-                newConnection.StartConnection(client);
+                if (keepRunning) 
+                {
+                    Connection newConnection = new Connection();
+                    connections.Add(newConnection);
+                    newConnection.Socket = client;
+                    newConnection.StartConnection(client);
+                }
+                else
+                {
+                    Console.WriteLine("Server is shutting down");
+                }
+
             }
             
         }
@@ -58,7 +67,7 @@ namespace Obligatorio.ServerInstafoto
         }
         private static void ExchangeDeclare(IModel channel)
         {
-            channel.ExchangeDeclare(ExchangeName, ExchangeType.Fanout);
+            channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
         }
         private static void PublishMessage(IModel channel, string message) 
         {
@@ -90,14 +99,15 @@ namespace Obligatorio.ServerInstafoto
                         Server.GetInstance().CommentPhoto();
                         break;
                     case "6":
-                        //var trapSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        //trapSocket.Connect("127.0.0.1", 6000);
+                        
                         foreach (Connection connection in Server.GetInstance().connections) 
                         {
                             connection.Socket.Shutdown(SocketShutdown.Both);
                             connection.Socket.Close();
 
                         }
+                        var trapSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        trapSocket.Connect("127.0.0.1", 6000);
 
                         keepRunning = false;
                         break;

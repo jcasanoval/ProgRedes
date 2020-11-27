@@ -67,8 +67,15 @@ namespace Obligatorio.ServerInstafoto
                 {
                     Console.WriteLine("El cliente " + id + " cerró la conexión: ");
                     connected = false;
-                    client.Shutdown(SocketShutdown.Both);
-                    client.Close();
+                    if (Server.keepRunning)
+                    {
+                        client.Shutdown(SocketShutdown.Both);
+                        client.Close();
+                    }
+                    else
+                    {
+                        Console.WriteLine("server is shuting down");
+                    }
                 }
             }
             Server.GetInstance().connections.Remove(connection);

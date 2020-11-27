@@ -24,7 +24,7 @@ namespace LogServer
         }
         private static void ExchangeDeclare(IModel channel)
         {
-            channel.ExchangeDeclare(ExchangeName, ExchangeType.Fanout);
+            channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
             
         }
 
