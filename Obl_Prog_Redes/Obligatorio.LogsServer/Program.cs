@@ -14,7 +14,7 @@ namespace Obligatorio.LogsServer
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
-            LogServer.GetInstance().StartListeners();
+            LogServer.GetInstance().Consumer();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

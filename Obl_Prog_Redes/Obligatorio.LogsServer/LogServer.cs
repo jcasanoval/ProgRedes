@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
+using Common.Logs;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -15,6 +16,7 @@ namespace Obligatorio.LogsServer
         public List<ILog> logs = new List<ILog>();
         private static LogServer instance;
         public bool running = true;
+        private const string ExchangeName = "logExchange";
 
         public static LogServer GetInstance()
         {
@@ -23,41 +25,43 @@ namespace Obligatorio.LogsServer
             return instance;
         }
 
-        public void StartListeners()
+        public void Consumer()
         {
-            var infoListener = new Thread(() => QueueListener(LogConstants.Info, new Info()));
-            infoListener.Start();
-            var warningListener = new Thread(() => QueueListener(LogConstants.Warning, new Warning()));
-            warningListener.Start();
-            var errorListener = new Thread(() => QueueListener(LogConstants.Error, new Error()));
-            errorListener.Start();
+            var connectionFactory = new ConnectionFactory { HostName = "localhost" };
+            using IConnection connection = connectionFactory.CreateConnection();
+            using IModel channel = connection.CreateModel();
+            ExchangeDeclare(channel);
+            string queueName = channel.QueueDeclare().QueueName;
+            QueueBind(channel, queueName);
+            ReceiveMessages(channel, queueName);
+            Console.ReadLine();
         }
 
-        private static void QueueListener(string logType, ILog log)
+        private static void ExchangeDeclare(IModel channel)
         {
-            while (LogServer.GetInstance().running)
+            channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
+
+        }
+
+        private static void QueueBind(IModel channel, string queueName)
+        {
+            channel.QueueBind(
+                queue: queueName,
+                exchange: ExchangeName,
+                routingKey: String.Empty);
+        }
+
+        private void ReceiveMessages(IModel channel, string queueName)
+        {
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += (model, ea) =>
             {
-                var factory = new ConnectionFactory() { HostName = "localhost" };
-                using(var connection = factory.CreateConnection())
-                using(var channel = connection.CreateModel())
-                {
-                    channel.ExchangeDeclare(exchange: "topic_logs",
-                                            type: "topic");
-                    var queueName = channel.QueueDeclare().QueueName;
-                    channel.QueueBind(queue: queueName,
-                                      exchange: "topic_logs",
-                                      routingKey: "log." + logType);
-                    var consumer = new EventingBasicConsumer(channel);
-                    consumer.Received += (model, ea) =>
-                    {
-                        var body = ea.Body.ToArray();
-                        var message = Encoding.UTF8.GetString(body);
-                        var routingKey = ea.RoutingKey;
-                        log.Message = message;
-                        LogServer.GetInstance().logs.Add(log);
-                    };
-                }
-            }
+                var body = ea.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+                logs.Add(LogHandler.Deserialize(message));
+            };
+
+            channel.BasicConsume(queueName, true, consumer);
         }
     }
 }
