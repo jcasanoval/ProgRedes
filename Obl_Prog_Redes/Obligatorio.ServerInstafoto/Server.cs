@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using RabbitMQ.Client;
+using Common.Logs;
 
 namespace Obligatorio.ServerInstafoto
 {
@@ -57,13 +58,14 @@ namespace Obligatorio.ServerInstafoto
             
         }
 
-        public void LogAction(string log)
+        public void LogAction(ILog log)
         {
             var connectionFactory = new ConnectionFactory { HostName = "localhost" };
             using IConnection connection = connectionFactory.CreateConnection();
             using IModel channel = connection.CreateModel();
+            string json = LogHandler.Serialize(log);
             ExchangeDeclare(channel);
-            PublishMessage(channel, log);
+            PublishMessage(channel, json);
         }
         private static void ExchangeDeclare(IModel channel)
         {
