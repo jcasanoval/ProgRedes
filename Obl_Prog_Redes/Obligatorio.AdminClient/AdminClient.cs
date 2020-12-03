@@ -16,7 +16,7 @@ namespace Obligatorio.AdminClient
         static async Task Main(string[] args)
         {
             var isRunning = true;
-            var clientEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1);
+            var clientEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0);
             var serverEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7000);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.Bind(clientEndpoint);
