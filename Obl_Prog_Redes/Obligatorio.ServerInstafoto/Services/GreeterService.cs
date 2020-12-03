@@ -40,14 +40,46 @@ namespace Obligatorio.ServerInstafoto
             {
                 message = "Nombre de usuario ya esta en uso";
             }
-            ActionResponse response = ListUsers();
+            ActionResponse response = new ActionResponse();
             response.Message = message;
             return response;
         }
 
-        private static ActionResponse ListUsers()
+        public override Task<ActionResponse> RemoveUser(UserRpc user, ServerCallContext context)
+        {
+            return Task.FromResult(DeleteUser(user));
+        }
+
+        private static ActionResponse DeleteUser(UserRpc user)
+        {
+            bool result = Server.GetInstance().DeleteUser(user.Name);
+            ActionResponse response = new ActionResponse();
+            if (result)
+                response.Message = "Usuario eliminado correctamente";
+            else
+                response.Message = "No se encontro el usuario";
+            return response;
+        }
+
+        public override Task<ActionResponse> ModifyUser(UserUpdate user, ServerCallContext context)
+        {
+            return Task.FromResult(UpdateUser(user));
+        }
+
+        private static ActionResponse UpdateUser(UserUpdate user)
         {
             ActionResponse response = new ActionResponse();
+            response.Message = Server.GetInstance().ModUser(user.Name, user.NewName, user.NewPassword);
+            return response;
+        }
+
+        public override Task<UserList> ListUsers(ListRequest request, ServerCallContext context)
+        {
+            return Task.FromResult(Users());
+        }
+        private static UserList Users()
+        {
+            UserList response = new UserList();
             foreach (string user in Server.GetInstance().UserListStrings())
             {
                 response.Users.Add(user);

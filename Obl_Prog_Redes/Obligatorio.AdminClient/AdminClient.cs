@@ -44,7 +44,7 @@ namespace Obligatorio.AdminClient
         private static void Menu(ref bool keepRunning, Socket socket, GreeterClient client)
         {
             Console.WriteLine(separador);
-            Console.WriteLine("Bienvenido al menu principal de administrador, ingresa la opcion que deseas realizar \n 1-ABM usuario \n 2-Ver logs \n 3-Exit");
+            Console.WriteLine("Bienvenido al menu principal de administrador, ingresa la opcion que deseas realizar \n 1-ABM usuario \n 2-Ver logs \n 3-Lista de usuarios \n 4-Exit");
             var input = Console.ReadLine();
             switch (input)
             {
@@ -55,6 +55,9 @@ namespace Obligatorio.AdminClient
                     LogMenu(socket);
                     break;
                 case "3":
+                    ListUsers(client);
+                    break;
+                case "4":
                     CommandPackage package = new CommandPackage(HeaderConstants.Request, CommandConstants.Exit);
                     CommandProtocol.SendCommand(socket, package);
                     socket.Shutdown(SocketShutdown.Both);
@@ -75,32 +78,87 @@ namespace Obligatorio.AdminClient
             switch (input)
             {
                 case "1":
-                    Console.WriteLine("Inserte nombre de usuario");
-                    string name = Console.ReadLine();
-                    while (name.Trim().Equals(""))
-                    {
-                        name = Console.ReadLine();
-                    }
-                    Console.WriteLine("Inserte contraseña");
-                    string password = Console.ReadLine();
-                    while (password.Trim().Equals(""))
-                    {
-                        password = Console.ReadLine();
-                    }
-                        var user = new UserRpc
-                        {
-                            Name = name,
-                            Password = password
-                        };
-                        var response = await client.RegisterUserAsync(user);
-                        Console.WriteLine(response.Message);
+                    RegisterUser(client);
                     break;
                 case "2":
+                    DeleteUser(client);
                     break;
                 case "3":
+                    ModifyUser(client);
                     break;
                 default:
                     break;
+            }
+        }
+
+        private static async Task RegisterUser(GreeterClient client)
+        {
+            Console.WriteLine("Inserte nombre de usuario");
+            string name = Console.ReadLine();
+            while (name.Trim().Equals(""))
+            {
+                name = Console.ReadLine();
+            }
+            Console.WriteLine("Inserte contraseña");
+            string password = Console.ReadLine();
+            while (password.Trim().Equals(""))
+            {
+                password = Console.ReadLine();
+            }
+            var user = new UserRpc
+            {
+                Name = name,
+                Password = password
+            };
+            var response = await client.RegisterUserAsync(user);
+            Console.WriteLine(response.Message);
+        }
+
+
+        private static async Task DeleteUser(GreeterClient client)
+        {
+            Console.WriteLine("Inserte nombre de usuario");
+            string name = Console.ReadLine();
+            while (name.Trim().Equals(""))
+            {
+                name = Console.ReadLine();
+            }
+            var user = new UserRpc
+            {
+                Name = name
+            };
+            var response = await client.RemoveUserAsync(user);
+            Console.WriteLine(response.Message);
+        }
+
+        private static async Task ModifyUser(GreeterClient client)
+        {
+            Console.WriteLine("Inserte nombre de usuario a modificar");
+            string name = Console.ReadLine();
+            while (name.Trim().Equals(""))
+            {
+                name = Console.ReadLine();
+            }
+            Console.WriteLine("Inserte el nuevo nombre (deje vacio para no cambiar)");
+            string newName = Console.ReadLine();
+            Console.WriteLine("Inserte nueva contraseña (deje vacio para no cambiar)");
+            string password = Console.ReadLine();
+            var user = new UserUpdate
+            {
+                Name = name,
+                NewName = newName,
+                NewPassword = password
+            };
+            var response = await client.ModifyUserAsync(user);
+            Console.WriteLine(response.Message);
+        }
+
+        private static async Task ListUsers(GreeterClient client)
+        {
+            var response = await client.ListUsersAsync(new ListRequest());
+            foreach (string user in response.Users)
+            {
+                Console.WriteLine(user);
             }
         }
 

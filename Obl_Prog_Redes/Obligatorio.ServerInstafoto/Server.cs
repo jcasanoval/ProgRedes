@@ -43,7 +43,7 @@ namespace Obligatorio.ServerInstafoto
             {
 
                 var client = server.Accept();
-                if (keepRunning) 
+                if (keepRunning)
                 {
                     Connection newConnection = new Connection();
                     connections.Add(newConnection);
@@ -56,7 +56,7 @@ namespace Obligatorio.ServerInstafoto
                 }
 
             }
-            
+
         }
 
         public void LogAction(ILog log)
@@ -72,7 +72,7 @@ namespace Obligatorio.ServerInstafoto
         {
             channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
         }
-        private static void PublishMessage(IModel channel, string message) 
+        private static void PublishMessage(IModel channel, string message)
         {
             var body = Encoding.UTF8.GetBytes(message);
             channel.BasicPublish(ExchangeName, String.Empty, null, body);
@@ -82,28 +82,12 @@ namespace Obligatorio.ServerInstafoto
             while (keepRunning)
             {
                 Console.WriteLine(separador);
-                Console.WriteLine("MENU DEL SERVIDOR \n 1-Mostrar clientes conectados \n 2-ABM cliente \n 3-Listar fotos de un usuario \n 4-Subir foto \n 5-Comentar foto \n 6-Apagar el servidor");
+                Console.WriteLine("Ingrese exit para apagar el servidor");
                 var input = Console.ReadLine();
                 switch (input)
                 {
-                    case "1":
-                        Server.GetInstance().PrintConnections();
-                        break;
-                    case "2":
-                        Server.GetInstance().ABM();
-                        break;
-                    case "3":
-                        Server.GetInstance().ListPhotos();
-                        break;
-                    case "4":
-                        Server.GetInstance().UploadPicture();
-                        break;
-                    case "5":
-                        Server.GetInstance().CommentPhoto();
-                        break;
-                    case "6":
-                        
-                        foreach (Connection connection in Server.GetInstance().connections) 
+                    case "exit":
+                        foreach (Connection connection in Server.GetInstance().connections)
                         {
                             connection.Socket.Shutdown(SocketShutdown.Both);
                             connection.Socket.Close();
@@ -114,208 +98,50 @@ namespace Obligatorio.ServerInstafoto
 
                         keepRunning = false;
                         break;
-                    default:
-                        Console.WriteLine("Opcion no valida");
-                        break;
                 }
             }
         }
 
-        private void PrintConnections()
+        public bool DeleteUser(string username)
         {
-            foreach (Connection connection in connections)
+            foreach (User user in users)
             {
-                if (connection.User != null)
-                {
-                    Console.WriteLine(connection.User.Name);
-                }
-            }
-        }
-
-        private void ABM()
-        {
-            Console.WriteLine(separador);
-            Console.WriteLine("MENU ABM \n 1-Alta cliente \n 2-Baja cliente \n 3-Modificacion cliente");
-            var input = Console.ReadLine();
-            switch (input)
-            {
-                case "1":
-                    AltaCliente();
-                    break;
-                case "2":
-                    BajaCliente();
-                    break;
-                case "3":
-                    ModCliente();
-                    break;
-                default:
-                    Console.WriteLine("Opcion no valida");
-                    break;
-            }
-        }
-
-        private void AltaCliente()
-        {
-            Console.WriteLine(separador);
-            Console.WriteLine("Ingrese nombre de usuario");
-            bool validInput = false;
-            string username = "";
-            while (!validInput)
-            {
-                username = Console.ReadLine();
-                if (username.Contains("%") || username.Trim().Length == 0)
-                {
-                    Console.WriteLine("El nombre de usuario no puede ser vacio ni contener %");
-                }
-                else
-                {
-                    validInput = true;
-                }
-            }
-            validInput = false;
-            Console.WriteLine("Ingrese contraseña");
-            string password = "";
-            while (!validInput)
-            {
-                password = Console.ReadLine();
-                if (password.Contains("%") || password.Trim().Length == 0)
-                {
-                    Console.WriteLine("La contraseña no puede ser vacia ni contener %");
-                }
-                else
-                {
-                    validInput = true;
-                }
-            }
-            try
-            {
-                RegisterUser(username, password);
-            }
-            catch
-            {
-                Console.WriteLine("El nombre de usuario ya esta en uso");
-            }
-        }
-
-        private void BajaCliente()
-        {
-            Console.WriteLine(separador);
-            Console.WriteLine("Ingrese el usuario que desea eliminar");
-            var input = Console.ReadLine();
-            foreach(User user in users)
-            {
-                if (user.Name == input)
+                if (user.Name == username)
                 {
                     users.Remove(user);
-                    return;
+                    return true;
                 }
             }
-            Console.WriteLine("No se encontro el usuario indicado");
+            return false;
         }
 
-        private void ModCliente()
+        public string ModUser(string name, string newName, string newPassword)
         {
-            Console.WriteLine(separador);
-            Console.WriteLine("Ingrese el usuario que desea modificar");
-            var user = users.Find(x => x.Name == Console.ReadLine());
+            var user = users.Find(x => x.Name == name);
             if (user == null)
             {
-                Console.WriteLine("No se encuentra ese usuario en el sistema");
-                return;
+                return "No se encuentra el usuario a modificar";
             }
-
-            Console.WriteLine("Ingrese el nuevo nombre de usuario");
-            bool validInput = false;
-            string username = "";
-            while (!validInput)
+            if (newName.Contains("%"))
             {
-                username = Console.ReadLine();
-                if (username.Contains("%") || username.Trim().Length == 0)
+                return "El nombre de usuario no puede contener %";
+            }
+            else
+            {
+                if (users.Exists(x => x.Name == newName))
                 {
-                    Console.WriteLine("El nombre de usuario no puede ser vacio ni contener %");
-                }
-                else
-                {
-                    if (users.Exists(x => x.Name == username))
-                    {
-                        Console.WriteLine("Ese nombre de usuario ya esta en uso");
-                    }
-                    else
-                    {
-                        validInput = true;
-                    }
+                    return "Ese nombre de usuario ya esta en uso";
                 }
             }
-            validInput = false;
-            Console.WriteLine("Ingrese la nueva contraseña");
-            string password = "";
-            while (!validInput)
+            if (newPassword.Contains("%"))
             {
-                password = Console.ReadLine();
-                if (password.Contains("%") || password.Trim().Length == 0)
-                {
-                    Console.WriteLine("La contraseña no puede ser vacia ni contener %");
-                }
-                else
-                {
-                    validInput = true;
-                }
+                return "La contraseña no puede contener %";
             }
-            user.Name = username;
-            user.Password = password;
-        }
-
-        private void ListPhotos()
-        {
-            Console.WriteLine(separador);
-            Console.WriteLine("Ingrese el usuario");
-            var user = users.Find(x => x.Name == Console.ReadLine());
-            if (user == null)
-            {
-                Console.WriteLine("No se encuentra ese usuario en el sistema");
-                return;
-            }
-            foreach (string photo in user.PictureList())
-            {
-                Console.WriteLine(photo);
-            }
-        }
-
-        private void UploadPicture()
-        {
-
-        }
-
-        private void CommentPhoto()
-        {
-            Console.WriteLine(separador);
-            Console.WriteLine("Ingrese el usuario al cual pertenece la foto");
-            var user = users.Find(x => x.Name == Console.ReadLine());
-            if (user == null)
-            {
-                Console.WriteLine("No se encuentra ese usuario en el sistema");
-                return;
-            }
-            Console.WriteLine("Ingrese la foto que desea comentar");
-            var photo = user.Photos.Find(x => x.Name == Console.ReadLine());
-            if (photo == null)
-            {
-                Console.WriteLine("El usuario no cuenta con una foto con ese nombre");
-                return;
-            }
-            Console.WriteLine("Ingrese el usuario que realiza el comentario");
-            var input = Console.ReadLine();
-            var commenter = users.Find(x => x.Name == input);
-            if (commenter == null)
-            {
-                Console.WriteLine("No se encuentra ese usuario en el sistema");
-                return;
-            }
-            Comment comment = new Comment();
-            comment.User = commenter;
-            Console.WriteLine("Ingrese el comentario");
-            comment.Text = Console.ReadLine();
-            photo.Comments.Add(comment);
+            if (newName.Trim() != "")
+                user.Name = newName;
+            if (newPassword != "")
+                user.Password = newPassword;
+            return "Usuario modificado con exito";
         }
 
         public User RegisterUser(string username, string password)
@@ -325,12 +151,12 @@ namespace Obligatorio.ServerInstafoto
             newUser.Password = password;
             //lock (registerLocker)
             //{
-                if (users.Exists(x => x.Name == username))
-                {
-                    throw new Exception();
-                }
+            if (users.Exists(x => x.Name == username))
+            {
+                throw new Exception();
+            }
 
-                users.Add(newUser);
+            users.Add(newUser);
             //}
             return newUser;
         }
