@@ -17,6 +17,10 @@ namespace Common.CommandProtocol
         public const int PictureList = 8;
         public const int CommentList = 9;
         public const int NewComment = 10;
+        public const int Logs = 11;
+        public const int LogInfo = 12;
+        public const int LogWarning = 13;
+        public const int LogError = 14;
         public const int Error = 99;
     }
 

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "Obligatorio.ServerInstafoto";
+option csharp_namespace = "AdminServer";
 
 package greet;
 
@@ -8,8 +8,6 @@ package greet;
 service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply);
-  //
-  rpc RegisterUser (UserRpc) returns (ActionResponse);
 }
 
 // The request message containing the user's name.
@@ -20,14 +18,4 @@ message HelloRequest {
 // The response message containing the greetings.
 message HelloReply {
   string message = 1;
-}
-
-message UserRpc {
-	string name = 1;
-	string password = 2;
-}
-
-message ActionResponse{
-	string message = 1;
-	repeated string users = 2;
 }

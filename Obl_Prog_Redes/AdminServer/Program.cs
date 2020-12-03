@@ -4,25 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace Obligatorio.ServerInstafoto
+namespace AdminServer
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            var server = new Thread(() => RunServer());
-            server.Start();
             CreateHostBuilder(args).Build().Run();
-            
-
-        }
-
-        private static void RunServer()
-        {
-            Server.GetInstance().SearchConnections();
         }
 
         // Additional configuration is required to successfully run gRPC on macOS.

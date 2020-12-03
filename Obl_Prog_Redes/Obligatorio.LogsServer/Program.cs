@@ -13,8 +13,10 @@ namespace Obligatorio.LogsServer
     {
         public static void Main(string[] args)
         {
+            LogServer server = LogServer.GetInstance();
+            server.Consumer();
             CreateHostBuilder(args).Build().Run();
-            LogServer.GetInstance().Consumer();
+            Console.ReadLine();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

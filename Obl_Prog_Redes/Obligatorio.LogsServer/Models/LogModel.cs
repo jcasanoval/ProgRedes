@@ -13,7 +13,6 @@ namespace Obligatorio.LogsServer.Models
 
         public string User { set; get; }
         public string Message { set; get; }
-
         public string Type { get; set; }
 
         public override ILog ToEntity()
@@ -36,7 +35,6 @@ namespace Obligatorio.LogsServer.Models
             return log;
         }
 
-
         protected override LogModel SetModel(ILog entity)
         {
             LogModel logModel = new LogModel();
@@ -48,7 +46,7 @@ namespace Obligatorio.LogsServer.Models
             {
                 logModel.Type = "Warning";
             }
-            else if (entity is Error)
+            else
             {
                 logModel.Type = "Error";
             }

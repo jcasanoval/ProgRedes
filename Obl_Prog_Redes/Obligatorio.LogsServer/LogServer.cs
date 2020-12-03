@@ -17,6 +17,7 @@ namespace Obligatorio.LogsServer
         private static LogServer instance;
         public bool running = true;
         private const string ExchangeName = "logExchange";
+        public IModel channel;
 
         public static LogServer GetInstance()
         {
@@ -29,12 +30,11 @@ namespace Obligatorio.LogsServer
         {
             var connectionFactory = new ConnectionFactory { HostName = "localhost" };
             using IConnection connection = connectionFactory.CreateConnection();
-            using IModel channel = connection.CreateModel();
+            channel = connection.CreateModel();
             ExchangeDeclare(channel);
             string queueName = channel.QueueDeclare().QueueName;
-            QueueBind(channel, queueName);
-            ReceiveMessages(channel, queueName);
-            Console.ReadLine();
+            QueueBind(queueName); 
+            ReceiveMessages(queueName);
         }
 
         private static void ExchangeDeclare(IModel channel)
@@ -43,22 +43,22 @@ namespace Obligatorio.LogsServer
 
         }
 
-        private static void QueueBind(IModel channel, string queueName)
+        private static void QueueBind(string queueName)
         {
-            channel.QueueBind(
+            LogServer.GetInstance().channel.QueueBind(
                 queue: queueName,
                 exchange: ExchangeName,
                 routingKey: String.Empty);
         }
 
-        private void ReceiveMessages(IModel channel, string queueName)
+        private void ReceiveMessages(string queueName)
         {
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, ea) =>
             {
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-                logs.Add(LogHandler.Deserialize(message));
+                LogServer.GetInstance().logs.Add(LogHandler.Deserialize(message));
             };
 
             channel.BasicConsume(queueName, true, consumer);

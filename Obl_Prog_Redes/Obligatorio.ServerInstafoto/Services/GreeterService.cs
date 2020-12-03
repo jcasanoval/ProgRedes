@@ -22,5 +22,37 @@ namespace Obligatorio.ServerInstafoto
                 Message = "Hello " + request.Name
             });
         }
+
+        public override Task<ActionResponse> RegisterUser(UserRpc user, ServerCallContext context)
+        {
+            return Task.FromResult(InsertUser(user));
+        }
+
+        private static ActionResponse InsertUser(UserRpc user)
+        {
+            string message;
+            try
+            {
+                Server.GetInstance().RegisterUser(user.Name, user.Password);
+                message = "Registro exitoso";
+            }
+            catch
+            {
+                message = "Nombre de usuario ya esta en uso";
+            }
+            ActionResponse response = ListUsers();
+            response.Message = message;
+            return response;
+        }
+
+        private static ActionResponse ListUsers()
+        {
+            ActionResponse response = new ActionResponse();
+            foreach (string user in Server.GetInstance().UserListStrings())
+            {
+                response.Users.Add(user);
+            }
+            return response;
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace Obligatorio.ServerInstafoto
         private static Server serverInstance;
         public static int pictureCount = 0;
         private const string ExchangeName = "logExchange";
+        static object registerLocker;
 
         public static bool keepRunning = true;
 
@@ -322,11 +323,15 @@ namespace Obligatorio.ServerInstafoto
             User newUser = new User();
             newUser.Name = username;
             newUser.Password = password;
-            if (users.Exists(x => x.Name == username))
-            {
-                throw new Exception();
-            }
-            users.Add(newUser);
+            //lock (registerLocker)
+            //{
+                if (users.Exists(x => x.Name == username))
+                {
+                    throw new Exception();
+                }
+
+                users.Add(newUser);
+            //}
             return newUser;
         }
         public User Login(String username, String password)

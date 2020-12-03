@@ -16,7 +16,7 @@ namespace Obligatorio.ServerInstafoto
         public Socket Socket { get; set; }
         static int _clientNumber;
         static object photoLocker;
-        static object registerLocker;
+        
 
         public void StartConnection(Socket client)
         {
