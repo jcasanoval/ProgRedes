@@ -21,6 +21,7 @@ namespace Common.CommandProtocol
         public const int LogInfo = 12;
         public const int LogWarning = 13;
         public const int LogError = 14;
+        public const int Logout = 15;
         public const int Error = 99;
     }
 

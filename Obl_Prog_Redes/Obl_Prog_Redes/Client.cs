@@ -162,11 +162,8 @@ namespace Client
                     AddComment(socket);
                     break;
                 case "6":
-                    CommandPackage package = new CommandPackage(HeaderConstants.Request, CommandConstants.Exit);
+                    CommandPackage package = new CommandPackage(HeaderConstants.Request, CommandConstants.Logout);
                     CommandProtocol.SendCommand(socket, package);
-                    socket.Shutdown(SocketShutdown.Both);
-                    socket.Close();
-                    keepRunning = false;
                     break;
                 default:
                     Console.WriteLine("Opcion no valida");

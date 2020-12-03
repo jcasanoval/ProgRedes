@@ -63,6 +63,9 @@ namespace Obligatorio.ServerInstafoto
                         case CommandConstants.NewComment:
                             AddComment(client, connection, package.Data);
                             break;
+                        case CommandConstants.Logout:
+                            Logout(connection);
+                            break;
                     }
                 }
                 catch (Exception ex)
@@ -121,6 +124,15 @@ namespace Obligatorio.ServerInstafoto
             }
             Server.GetInstance().LogAction(log);
             CommandProtocol.SendCommand(client, response);
+        }
+
+        private static void Logout(Connection connection)
+        {
+            ILog log = new Info();
+            log.User = connection.User.Name;
+            log.Message = "Usuario cierra sesion";
+            Server.GetInstance().LogAction(log);
+            connection.User = null;
         }
 
         private static void Register(Socket client, String data, Connection connection)
